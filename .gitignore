@@ -1,0 +1,14 @@
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.DS_Store
+.bash_history
+.local
+.config
+data/*
+results/*
+report/results/*
+alluvial_packages_tmp/*
+test*
+*.log

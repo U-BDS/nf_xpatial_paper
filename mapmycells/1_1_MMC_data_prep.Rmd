@@ -1,0 +1,77 @@
+---
+title: "nf_xpatial | MapMyCells"
+output:
+  html_document:
+    code_folding: hide
+    css: "style.css"
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Overview - MapMyCells with output from `nf_xpatial`
+
+* Illustration purposes of using nf_xpatial outputs for further processing including cell label transfer.
+* This example uses the object which was area normalized, highlighting that mapmycells require the raw data (which is kept in the object under the original `Xenium` assay in the `counts` slot)
+* Information about references can be found at: <https://portal.brain-map.org/atlases-and-data/bkp/mapmycells/cell-type-references>
+
+
+```{r load libraries, message=FALSE}
+set.seed(1234)
+library(Seurat)
+library(ggplot2)
+library(anndata)
+```
+
+```{r}
+inputdir <- "./data/"
+outdir <- "./results/1_MapMyCells/"
+dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
+```
+
+
+```{r}
+seurat_combined_area <- readRDS(file = paste0(inputdir,"compiled_area_norm_all_clusters.rds"))
+
+DefaultAssay(object = seurat_combined_area) <- "Xenium"
+
+# for AreaNorm only! Need to JoinLayers for Xenium assay (this is automatically done for LogNorm).
+seurat_combined_area[["Xenium"]] <- JoinLayers(seurat_combined_area[["Xenium"]])
+
+seurat_combined_area
+```
+
+# Save metadata for raw_data_checks (a sanity check):
+
+```{r}
+meta_area <- as.data.frame(seurat_combined_area@meta.data)
+
+saveRDS(meta_area, paste0(outdir,"meta_area.rds"))
+```
+
+# Save raw counts to `anndata` format:
+
+```{r}
+data_matrix_t_area <- Matrix::t(seurat_combined_area[["Xenium"]]$counts)
+
+#raw matrix across all samples
+saveRDS(data_matrix_t_area, paste0(outdir,"data_matrix_t_area.rds"))
+```
+
+```{r}
+# Convert to anndata format
+ad_area <- AnnData(
+  X = data_matrix_t_area,
+  obs = data.frame(group = rownames(data_matrix_t_area), row.names = rownames(data_matrix_t_area)),
+  var = data.frame(type = colnames(data_matrix_t_area), row.names = colnames(data_matrix_t_area))
+)
+
+# Write to compressed h5ad file
+write_h5ad(ad_area, paste0(outdir,"seurat_integrated_mapmycells_area.h5ad"),compression='gzip')
+
+# Check file size. File MUST be <2GB to upload for MapMyCells
+print(paste("Size in MB:", round(file.size(paste0(outdir,"seurat_integrated_mapmycells_area.h5ad"))/2^20)))
+```
