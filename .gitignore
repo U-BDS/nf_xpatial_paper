@@ -8,7 +8,7 @@
 .config
 data/*
 results/*
-report/results/*
-alluvial_packages_tmp/*
+src_*/*.log
 test*
 *.log
+

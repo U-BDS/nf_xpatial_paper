@@ -1,0 +1,94 @@
+---
+title: "Day_Jeremy_001_2026 | Figures"
+author: 
+  - name: "Lara Ianov, Ph.D. | <lianov@uab.edu> | <https://www.uab.edu/cores/ircp/bds>"
+output:
+  html_document:
+    code_folding: hide
+    css: "style.css"
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load libraries, message=FALSE}
+# container same as nf_xpatial: nf_xenium_analysis_0.0.5.sif
+set.seed(1234)
+library(Seurat)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(dplyr)
+```
+
+
+```{r}
+inputdir <- "./results/1_MapMyCells/"
+outdir <- "./results/figures/"
+dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
+```
+
+# Import main obj and markers
+```{r}
+seurat_obj <- readRDS(file = paste0(inputdir,"compiled_area_norm_all_clusters_MMC.rds"))
+```
+
+```{r}
+# markers linked to cell cluster calls
+#### cluster numbers from clust_BSKY_l0.0_k15_d30_r1.2 ident ####
+markers <- read.csv("./data/markers_refined.csv")
+
+features_plot <- na.omit(unique(markers$marker))
+```
+
+# Figs
+
+## DotPlot
+
+```{r}
+# clusters must be ordered
+seurat_obj$clust_BSKY_l0.0_k15_d30_r1.2 <- factor(seurat_obj$clust_BSKY_l0.0_k15_d30_r1.2, 
+                                                  levels = sort(unique(seurat_obj$clust_BSKY_l0.0_k15_d30_r1.2)))
+
+p1 <- DotPlot(seurat_obj, 
+              features = features_plot,
+              group.by = "clust_BSKY_l0.0_k15_d30_r1.2",
+              assay = "AreaNorm",
+              cols = c("#D55E00", "#0072B2")) +
+  coord_flip() +
+  theme(axis.title = element_text(size = 18),
+        axis.text.x = element_text(size=14, angle = 45, hjust=1),
+        axis.text.y = element_text(size=14),
+        axis.title.y = element_blank(),
+        legend.position = "bottom")
+
+ggsave(paste0(outdir,"markers_dotplot.pdf"), p1, width = 9, height = 10, units = "in")
+```
+
+## TODO: ImageDimplot of specific features as example as well??
+
+## Annotated UMAP
+
+```{r}
+# add cell calls to the seurat obj
+
+# Create one row per peak_cluster
+cluster_map <- markers %>%
+  select(peak_cluster, cell_type) %>%
+  distinct() %>%
+  mutate(peak_cluster = as.character(peak_cluster))
+
+celltype_vector <- setNames(cluster_map$cell_type, cluster_map$peak_cluster)
+
+# Add annotation to Seurat metadata
+seurat_obj$CellType <- unname(celltype_vector[as.character(seurat_obj$clust_BSKY_l0.0_k15_d30_r1.2)])
+
+# save annotated obj
+
+saveRDS(seurat_obj,paste0(outdir,"seurat_area_norm_annotated.rds"))
+```
+
+

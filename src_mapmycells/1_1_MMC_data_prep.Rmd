@@ -34,20 +34,20 @@ dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
 
 
 ```{r}
-seurat_combined_area <- readRDS(file = paste0(inputdir,"compiled_area_norm_all_clusters.rds"))
+seurat_obj <- readRDS(file = paste0(inputdir,"compiled_area_norm_all_clusters.rds"))
 
-DefaultAssay(object = seurat_combined_area) <- "Xenium"
+DefaultAssay(object = seurat_obj) <- "Xenium"
 
 # for AreaNorm only! Need to JoinLayers for Xenium assay (this is automatically done for LogNorm).
-seurat_combined_area[["Xenium"]] <- JoinLayers(seurat_combined_area[["Xenium"]])
+seurat_obj[["Xenium"]] <- JoinLayers(seurat_obj[["Xenium"]])
 
-seurat_combined_area
+seurat_obj
 ```
 
 # Save metadata for raw_data_checks (a sanity check):
 
 ```{r}
-meta_area <- as.data.frame(seurat_combined_area@meta.data)
+meta_area <- as.data.frame(seurat_obj@meta.data)
 
 saveRDS(meta_area, paste0(outdir,"meta_area.rds"))
 ```
@@ -55,7 +55,7 @@ saveRDS(meta_area, paste0(outdir,"meta_area.rds"))
 # Save raw counts to `anndata` format:
 
 ```{r}
-data_matrix_t_area <- Matrix::t(seurat_combined_area[["Xenium"]]$counts)
+data_matrix_t_area <- Matrix::t(seurat_obj[["Xenium"]]$counts)
 
 #raw matrix across all samples
 saveRDS(data_matrix_t_area, paste0(outdir,"data_matrix_t_area.rds"))

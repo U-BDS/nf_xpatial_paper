@@ -1,0 +1,58 @@
+---
+title: "Day_Jeremy_001_2026 | MapMyCells"
+author: 
+  - name: "Lara Ianov, Ph.D. | <lianov@uab.edu> | <https://www.uab.edu/cores/ircp/bds>"
+output:
+  html_document:
+    code_folding: hide
+    css: "style.css"
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Overview - MapMyCells with output from `nf_xpatial`
+
+* `MapMyCells` data results to main object (**AreaNorm**)
+
+
+```{r load libraries, message=FALSE}
+# container same as nf_xpatial: nf_xenium_analysis_0.0.5.sif
+set.seed(1234)
+library(Seurat)
+```
+
+
+```{r}
+inputdir <- "./data/"
+outdir <- "./results/1_MapMyCells/"
+dir.create(outdir, showWarnings = FALSE, recursive = TRUE)
+```
+
+# Import main obj
+```{r}
+seurat_obj <- readRDS(file = paste0(inputdir,"compiled_area_norm_all_clusters.rds"))
+```
+
+# Import MapMyCells results (data clean-up done with `mapmycells_name_cleanup.sh`)
+
+```{r}
+mapmycells_area <- read.csv(paste0(outdir,"/seurat_integrated_mapmycells_area/seurat_integrated_mapmycells_area_final.csv"), row.names = 1)
+```
+
+# AddMetaData
+
+```{r}
+seurat_obj <- AddMetaData(seurat_obj, mapmycells_area)
+```
+
+# Save objects with MapMyCells results
+
+```{r}
+# MMC = MapMyCells
+saveRDS(seurat_obj, file = paste0(outdir,"compiled_area_norm_all_clusters_MMC.rds"))
+```
+
