@@ -22,6 +22,7 @@ library(tidyr)
 library(readr)
 library(ggplot2)
 library(dplyr)
+library(patchwork)
 ```
 
 
@@ -68,8 +69,6 @@ p1 <- DotPlot(seurat_obj,
 ggsave(paste0(outdir,"markers_dotplot.pdf"), p1, width = 9, height = 10, units = "in")
 ```
 
-## TODO: ImageDimplot of specific features as example as well??
-
 ## Annotated UMAP
 
 ```{r}
@@ -90,5 +89,3 @@ seurat_obj$CellType <- unname(celltype_vector[as.character(seurat_obj$clust_BSKY
 
 saveRDS(seurat_obj,paste0(outdir,"seurat_area_norm_annotated.rds"))
 ```
-
-
