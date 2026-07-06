@@ -91,9 +91,7 @@ box_plot <-
         size = 2,
         shape = 16
     ) +
-    labs(title = "Box Plot",
-            x = "Sample",
-            y = "Area") +
+    labs(x = "Sample", y = "Area") + # no title need for the paper
     theme_minimal() +
     theme(legend.position = "none",
           axis.text.x = element_text(angle = 45, hjust = 1))

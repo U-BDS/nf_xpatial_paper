@@ -107,8 +107,7 @@ overlapping_histogram_plot <-
         aes(xintercept = upper_bound, color = sample),
         linetype = "dotted",
         size = 1) +
-    labs(
-        title = "Overlapping Histogram Plot",
+    labs( # title not needed for paper
         x = "Area",
         y = "Count"
     ) +

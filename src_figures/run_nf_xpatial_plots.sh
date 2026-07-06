@@ -106,6 +106,21 @@ ${nf_xpatial_fun}/qc_feature_scatter_plot.R \
     --width 6 \
     --height 5
 
+## FEATURE AND COUNT IMAGE FEATURE PLOT ##
+
+${nf_xpatial_fun}/qc_image_feature_plot.R \
+    --features "nFeature_Xenium" \
+    --input $input_obj \
+    --outfile "${output_dir}/nfeature_image_plot.png" \
+    --width 6 \
+    --height 5
+
+${nf_xpatial_fun}/qc_image_feature_plot.R \
+    --features "nCount_Xenium" \
+    --input $input_obj \
+    --outfile "${output_dir}/ncount_image_plot.png" \
+    --width 6 \
+    --height 5
 
 ##############################
 ### CELL SEG AND SHAPE QCS ###
@@ -187,6 +202,24 @@ ${nf_xpatial_fun}/qc_split_cluster_plots.R \
     --assay "AreaNorm" \
     --input $input_obj \
     --outfile "${output_dir}/BANKSY_l0.9.k30.d30_split_cluster.png"
+    
+#####################
+### BARNYARD PLOT ###
+#####################
+echo "Making barnyard plots"
+
+input_obj="${working_dir}/data/S157_norm_area.rds"
+input_gene_pairs="${working_dir}/data/S157_gene_pairs.csv" # selected pairs
+
+${nf_xpatial_fun}/qc_barnyard_plot.R \
+    --assay "AreaNorm" \
+    --input $input_obj \
+    --gene_pair_stats $input_gene_pairs \
+    --outfile "barnyard_plot.pdf" \
+    --width 6 \
+    --height 5
+    
+mv *barnyard_plot.pdf $output_dir
 
 ################
 ### CLEAN-UP ###
