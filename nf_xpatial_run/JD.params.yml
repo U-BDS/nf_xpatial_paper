@@ -1,0 +1,35 @@
+# Input options
+input: "/data/project/CIRC_NBI/nf_xpatial_tests/OG_pilot/nf_xpatial_paper_run/JD.samplesheet.csv" 
+marker_gene_list: "/data/project/CIRC_NBI/nf_xpatial_tests/OG_pilot/nf_xpatial_paper_run/JD_gene_list.csv" 
+
+# Filtering Options
+filter_features: "Mbp"
+skip_nCount_filtering: False
+min_nCount: 10
+skip_nFeature_filtering: False
+min_nFeature: 10
+skip_cell_area_filtering: True
+
+# Normalization Options
+normalization_method: "area,log"
+
+# Clustering options
+clustering_methods: "BANKSY,Seurat,BANKSYSeurat"
+
+# Integration options
+dim_Seurat: "25,30"
+res_Seurat: "0.3,0.4,0.5,0.6,0.7,0.8"
+
+# BANKSY options
+lambda_BANKSY: "0.0,0.8,0.9"
+k_geom_BANKSY: "15,30"
+nPCs_BANKSY: "30"
+res_BANKSY: "0.4,0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2"
+use_agf_BANKSY: true
+max_iter_BANKSY: 60
+
+# enable Vlns
+skip_cluster_vln_plot: False
+
+# generate all gene-pairs (typically perform on a subset only,but generating for all here)
+skip_gene_pair_stats_filter: False
