@@ -64,9 +64,65 @@ p1 <- DotPlot(seurat_obj,
         axis.text.x = element_text(size=14, angle = 45, hjust=1),
         axis.text.y = element_text(size=14),
         axis.title.y = element_blank(),
-        legend.position = "bottom")
+        legend.position = "bottom") + 
+  guides(size  = guide_legend(title = "% expression"), # shortening titles
+         color = guide_colorbar(title = "Avg. expression"))
 
 ggsave(paste0(outdir,"markers_dotplot.pdf"), p1, width = 9, height = 10, units = "in")
+```
+
+## Heatmap of MMC annotations
+
+```{r}
+# Plots the most prevalent class from the MMC subclass category:
+
+clust_col <- "clust_BSKY_l0.0_k15_d30_r1.2"
+sub_col   <- "subclass_name"                  # MapMyCells subclass column
+md        <- seurat_obj@meta.data
+
+## composition: % of each subclass within the clusters ##
+comp <- md %>%
+  count(cluster = .data[[clust_col]], subclass = .data[[sub_col]], name = "n") %>%
+  group_by(cluster) %>%
+  mutate(prop = n / sum(n)) %>%
+  ungroup()
+
+## lump subclasses that never reach 10% in any cluster into "other"
+keep <- comp %>% group_by(subclass) %>% summarise(mx = max(prop), .groups = "drop") %>%
+  filter(mx >= 0.05) %>% pull(subclass) # cutoff for classes to be "other" 
+comp <- comp %>%
+  mutate(subclass = ifelse(subclass %in% keep, subclass, "other")) %>%
+  group_by(cluster, subclass) %>% summarise(prop = sum(prop), .groups = "drop")
+
+## order axes: clusters 1-34; subclasses alphabetical with "other" last
+comp$cluster  <- factor(comp$cluster, levels = 1:34)
+sub_levels    <- sort(setdiff(unique(comp$subclass), "other"))
+comp$subclass <- factor(comp$subclass, levels = c("other", rev(sub_levels)))
+
+## label text: only show >=10%, and pick a legible colors per tile
+comp <- comp %>%
+  mutate(lab      = ifelse(prop >= 0.10, round(prop * 100), NA),
+         txt_col  = ifelse(prop >= 0.50, "white", "grey10"))
+
+## heatmap ##
+p1 <- ggplot(comp, aes(cluster, subclass, fill = prop)) +
+  geom_tile(colour = "grey92") +
+  geom_text(aes(label = lab, colour = txt_col), size = 4.2, na.rm = TRUE) +
+  scale_colour_identity() +
+  scale_fill_viridis_c(option = "magma", direction = -1,
+                       labels = scales::percent, name = "% of cluster",
+                       limits = c(0, 1)) +
+  labs(x = "BANKSY cluster", y = "MapMyCells subclass") +
+  theme_minimal(base_size = 14) +
+  theme(panel.grid   = element_blank(),
+        axis.title   = element_text(size = 18),
+        axis.text.x  = element_text(size = 14, angle = 45, hjust = 1),
+        axis.text.y  = element_text(size = 14),
+        legend.title = element_text(size = 14),
+        legend.text  = element_text(size = 12))
+
+ggsave(paste0(outdir, "mmc_composition_heatmap.pdf"),
+       width = 14, height = 8, limitsize = FALSE)
 ```
 
 ## Annotated UMAP
