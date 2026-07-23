@@ -1,0 +1,32 @@
+# Input options
+input: "./samplesheet.csv" 
+marker_gene_list: "./gene_list.csv"
+
+# Filtering Options
+skip_nCount_filtering: False
+min_nCount: 10
+skip_nFeature_filtering: False
+min_nFeature: 10
+skip_cell_area_filtering: True
+
+# Normalization Options
+normalization_method: "area,log"
+
+clustering_methods: "Seurat,BANKSY,BANKSYSeurat"
+
+# Integration options
+dim_Seurat: "25,30"
+res_Seurat: "0.4,0.5,0.6,0.7"
+skip_tsne_plot: True
+
+# BANKSY options
+skip_banksy_vf_filter: True
+vf_nfeatures: 2000
+lambda_BANKSY: "0.0,0.8,0.9"
+k_geom_BANKSY: "30"
+nPCs_BANKSY: "20,30"
+res_BANKSY: "0.5,0.6,0.7,0.8,0.9,1.0,1.1,1.2,1.3,1.4,1.5"
+use_agf_BANKSY: True
+max_iter_BANKSY: 60
+skip_cluster_vln_plot: False
+

@@ -1,0 +1,7 @@
+sample,xenium,metadata,manual_annotation
+GSM9509134,./raw_data/GSM9509134/,./metadata.csv,
+GSM9509135,./raw_data/GSM9509135/,./metadata.csv,
+GSM9509136,./raw_data/GSM9509136/,./metadata.csv,
+GSM9509137,./raw_data/GSM9509137/,./metadata.csv,
+GSM9509138,./raw_data/GSM9509138/,./metadata.csv,
+GSM9509139,./raw_data/GSM9509139/,./metadata.csv,
