@@ -82,18 +82,25 @@ plot_barnyard <- function(
         collapse = "\n"
     )
 
+    # for the paper, making gene names in italics (mouse specific)
+    legend_labels <- lapply(names(color_mapping), function(cat) {
+      if (cat %in% c(x_lab, y_lab)) bquote(italic(.(cat))) else cat
+    })
+    names(legend_labels) <- names(color_mapping)
+    
     # Create the scatter plot
     scatter_plot <- ggplot(plot_data, aes(x = x_gene, y = y_gene, color = Category)) +
         geom_point(size = 1, alpha = 0.5) +
-        scale_color_manual(values = color_mapping) +
+        scale_color_manual(values = color_mapping,
+                           labels = legend_labels) +
         theme_minimal() +
         labs(
-        x = x_lab, 
-        y = y_lab,
+        x = bquote(italic(.(x_lab))), 
+        y = bquote(italic(.(y_lab))),
         subtitle = subtitle_text  # Add subtitle here
         ) +
         theme(legend.position = "bottom") +
-        ggtitle(paste0("Barnyard Plot for ", x_lab, " and ", y_lab))
+      ggtitle(bquote("Barnyard Plot for" ~ italic(.(x_lab)) ~ "and" ~ italic(.(y_lab))))
     
     if (!legend) {
         scatter_plot <- scatter_plot + theme(legend.position = "none")

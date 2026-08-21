@@ -62,7 +62,7 @@ p1 <- DotPlot(seurat_obj,
   coord_flip() +
   theme(axis.title = element_text(size = 18),
         axis.text.x = element_text(size=14, angle = 45, hjust=1),
-        axis.text.y = element_text(size=14),
+        axis.text.y = element_text(size=14, face = "italic"),
         axis.title.y = element_blank(),
         legend.position = "bottom") + 
   guides(size  = guide_legend(title = "% expression"), # shortening titles
